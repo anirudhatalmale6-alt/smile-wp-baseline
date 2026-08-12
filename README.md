@@ -50,6 +50,11 @@ the login URL is still at the default
 It knows a noindexed site is probably staging and skips the sitemap checks
 rather than failing them, because a checker that cries wolf gets ignored.
 
+**LiteSpeed gotcha it caught:** a cached page is served without running PHP, so
+security headers set by the mu-plugin appear on a cache miss and vanish on a
+cache hit. That is why the headers are in `templates/htaccess-hardening.conf`
+as well. Always test with and without a cache-busting query string.
+
 ### What it deliberately does not check
 
 Judgement. Run these by hand, every time:

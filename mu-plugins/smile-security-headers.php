@@ -36,7 +36,15 @@ function smile_security_headers() {
 	);
 
 	if ( is_ssl() ) {
-		$headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains';
+		// includeSubDomains is opt-in on purpose. Sent from an apex domain it
+		// binds EVERY subdomain to https, including staging and preview ones
+		// that might not have a certificate yet, and it cannot be taken back
+		// for a year. Define SMILE_HSTS_SUBDOMAINS true once you are sure.
+		$hsts = 'max-age=31536000';
+		if ( defined( 'SMILE_HSTS_SUBDOMAINS' ) && SMILE_HSTS_SUBDOMAINS ) {
+			$hsts .= '; includeSubDomains';
+		}
+		$headers['Strict-Transport-Security'] = $hsts;
 	}
 
 	/**
@@ -60,7 +68,7 @@ function smile_security_headers_admin( $headers ) {
 	$headers['X-Frame-Options']        = 'SAMEORIGIN';
 	$headers['Referrer-Policy']        = 'strict-origin-when-cross-origin';
 	if ( is_ssl() ) {
-		$headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains';
+		$headers['Strict-Transport-Security'] = 'max-age=31536000';
 	}
 	return $headers;
 }
